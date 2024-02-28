@@ -1,0 +1,43 @@
+spring:
+  cloud:
+    function:
+      definition: tableBookOrderIntegrationHandler;newMessageStoreHandler
+    stream:
+      bindings:
+        tableBookOrderIntegrationHandler-in-0:
+          binder: outerKafka
+          destination: outside.table-book-order.0
+          group: kafka-integration
+        tableBookOrderIntegrationHandler-out-0:
+          binder: innerKafka
+          destination: table-book-order.0
+        newMessageStoreHandler-in-0:
+          binder: outerKafka
+          destination: outside.new-topic.0
+          group: kafka-integration
+      binders:
+        outerKafka:
+          type: kafka
+          environment:
+            spring:
+              cloud:
+                stream:
+                  kafka:
+                    binder:
+                      auto-create-topics: false
+                      brokers:
+                        - localhost:39092
+        innerKafka:
+          type: kafka
+          environment:
+            spring:
+              cloud:
+                stream:
+                  kafka:
+                    binder:
+                      auto-create-topics: false
+                      brokers:
+                        - localhost:29092
+      #kafka:
+      #  binder:
+      #    auto-create-topics: false

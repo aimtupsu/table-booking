@@ -1,0 +1,25 @@
+spring:
+  cloud:
+    function:
+      definition: tableBookOrderIntegrationHandler
+    stream:
+      bindings:
+        tableBookOrderIntegrationHandler-in-0:
+          binder: kafka1
+          destination:
+      binders:
+        kafka1:
+          type: kafka
+          environment:
+            spring:
+              kafka:
+                bootstrap-servers: localhost:9093
+        kafka2:
+          type: kafka
+          environment:
+            spring:
+              kafka:
+                bootstrap-servers: localhost:29092
+      kafka:
+        binders:
+

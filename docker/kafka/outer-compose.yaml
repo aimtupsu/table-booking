@@ -1,0 +1,36 @@
+version: '3.9'
+name: outer-kafka
+
+services:
+  outzookeeper:
+    image: confluentinc/cp-zookeeper:7.1.1
+    hostname: outzookeeper
+    ports:
+      - "2182:2181"
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    networks:
+      - outer-network
+  outkafka:
+    image: confluentinc/cp-kafka:latest
+    hostname: outkafka
+    depends_on:
+      - outzookeeper
+    ports:
+      - "39092:39092"
+    restart: on-failure
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: outzookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://outkafka:9092,PLAINTEXT_HOST://localhost:39092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+    networks:
+      - outer-network
+
+networks:
+  outer-network:
+    name: tb-outer-kafka-network
+    driver: bridge
